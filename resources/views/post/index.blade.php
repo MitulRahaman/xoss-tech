@@ -101,19 +101,19 @@
                         {
                             extend: 'copy',
                             text: 'Copy',
-                            title: "User Table"
+                            title: "All Posts"
                         },
                         {
                             extend: 'csv',
                             text: 'CSV',
-                            title: "User Table"
+                            title: "All Posts"
                         },
                         {
                             extend: 'print',
                             exportOptions: {
                                 columns: ':visible'
                             },
-                            title: "User Table"
+                            title: "All Posts"
                         },
                     ],
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'All']],
