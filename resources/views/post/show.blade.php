@@ -1,4 +1,5 @@
 <x-app-layout>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .btn {
             padding: 0.3rem 0.5rem;
@@ -42,9 +43,22 @@
         </div>
     </x-slot>
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close text-dark mr-4" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close text-dark mr-4" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="container justify-content-center p-6 px-8">
         <div class="row">
-            <div class="col-sm-6 col-md-6 px-8">
+            <div class="col-sm-12 col-md-12 px-8">
                 <div class="row mt-4">
                     <div class="col-sm-12">
                         <div class="card text-bg-light" style="padding: 1rem;">
@@ -77,7 +91,7 @@
 
                 <div class="row mt-2">
                     <div class="col-sm-12">
-                        <div class="text-bg-light" style="padding: 1rem;">
+                        <div class="card mt-2">
                             <form action="{{ route('post.storeComment') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="post_id" value="{{ $showPost->id }}">
@@ -85,7 +99,7 @@
                                 <div class="form-group">
                                     <textarea class="form-control" style="width: 600px;" id="comment" name="comment" rows="3" required></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-alt-primary">Submit</button>
+                                <button type="submit" class="btn btn-alt-primary mt-4">Submit</button>
                             </form>
                         </div>
                     </div>
@@ -93,4 +107,6 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </x-app-layout>

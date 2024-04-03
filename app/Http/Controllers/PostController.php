@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
+use App\Notifications\PostCreationNotification;
+use App\Notifications\CommentNotification;
+use Illuminate\Support\Facades\Notification;
+
 class PostController extends Controller
 {
     private $postService;
@@ -37,12 +41,15 @@ class PostController extends Controller
 
     public function store(PostAddRequest $request)
     {
+        $user = $this->postService->getUser(auth()->user()->id);
+
         try {
             if ($this->postService->storePost($request)) {
-                return redirect('/index');
+                Notification::send($user, new PostCreationNotification());
+                return redirect('/index')->with('success', 'Post created successfully.');
             }
         } catch (\Exception $exception) {
-            return redirect()->back()->with('error', $exception->getMessage());
+            return redirect('/index')->with('error', 'Post created but unable to send email.');
         }
     }
 
@@ -56,7 +63,7 @@ class PostController extends Controller
     {
         try {
             if ($this->postService->updatePost($request, $id)) {
-                return redirect('/index');
+                return redirect('/index')->with('success', 'Post updated successfully.');;
             }
         } catch (\Exception $exception) {
             return redirect()->back()->with('error', $exception->getMessage());
@@ -67,7 +74,7 @@ class PostController extends Controller
     {
         try {
             $this->postService->delete($id);
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Post deleted successfully');
         } catch (\Exception $exception) {
             return redirect()->back()->with('error', $exception->getMessage());
         }
@@ -76,18 +83,19 @@ class PostController extends Controller
     public function show($id)
     {
         $showPost = $this->postService->showPost($id);
-        //dd($showPost->comments[1]->user->name);
         return view('post.show', compact('showPost'));
     }
 
     public function storeComment(Request $request)
     {
+        $user = $this->postService->getUser(auth()->user()->id);
         try {
             if ($this->postService->storeComment($request)) {
-                return redirect()->back();
+                Notification::send($user, new CommentNotification());
+                return redirect()->back()->with('success', 'Commented successfully');
             }
         } catch (\Exception $exception) {
-            return redirect()->back()->with('error', $exception->getMessage());
+            return redirect()->back()->with('error', 'Commented but unable to send email');
         }
     }
 }

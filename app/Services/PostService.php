@@ -42,6 +42,11 @@ class PostService
         return $this->postRepository->setId($id)->getPost();
     }
 
+    public function getUser($id)
+    {
+        return $this->postRepository->setId($id)->getUser();
+    }
+
     public function showPost($id)
     {
         return $this->postRepository->setId($id)->showPost();
@@ -64,44 +69,6 @@ class PostService
             ->updatePost();
         }
     }
-
-    // public function LeaveApplicationEmail($value)
-    // {
-    //     if($value['leaveTypeId']) {
-    //         $receivers = $this->leaveApplyRepository->setId(auth()->user()->id)->getLeaveAppliedEmailRecipient();
-    //         if(!$receivers) {
-    //             return false;
-    //         }
-
-    //         $leaveTypeName = $this->leaveApplyRepository->getLeaveTypes($value['leaveTypeId']);
-    //         $data =[
-    //             'data' => $value,
-    //             'leaveTypeName' =>  $leaveTypeName,
-    //             'to' => $receivers[1],
-    //             'cc'=> $receivers[0],
-    //             'user_email' => auth()->user()->email,
-    //             'user_name' => auth()->user()->full_name,
-    //         ];
-    //         LeaveApplyJob::dispatch($data);
-    //         return true;
-    //     } else {
-    //         $receivers = $this->leaveApplyRepository->getReciever($value->employeeId);
-    //         $temp =[
-    //             'leaveType' => $value->leaveType,
-    //             'startDate' => $value->startDate,
-    //             'endDate'=> $value->endDate,
-    //         ];
-    //         $data =[
-    //             'data' => $temp,
-    //             'to' => $receivers[1],
-    //             'cc'=> $receivers[0],
-    //             'user_email' => auth()->user()->email,
-    //             'user_name' => auth()->user()->full_name,
-    //         ];
-    //         LeaveApproveJob::dispatch($data);
-    //         return true;
-    //     }
-    // }
 
     public function delete($id)
     {
@@ -147,7 +114,7 @@ class PostService
                     $action_btn .= "$toggle_delete_btn";
                 }
             } else {
-                $action_btn .= '<span style="margin-left: 7px;">You don\'t have permission</span>';
+                $action_btn .= '<span style="margin-left: 7px;">No permission</span>';
             }
 
             $action_btn .= "</ul>

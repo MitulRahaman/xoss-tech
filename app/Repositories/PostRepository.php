@@ -55,57 +55,18 @@ class PostRepository
 
     public function getPost()
     {
-        return Post::where('id', '=', $this->id)->first();
+        return Post::find($this->id);
+    }
+
+    public function getUser()
+    {
+        return User::find($this->id);
     }
 
     public function showPost()
     {
         return Post::with(['user', 'comments.user'])->find($this->id);
     }
-
-    // public function getLeaveAppliedEmailRecipient()
-    // {
-    //     $appliedUser = DB::table('basic_info')->where('user_id', '=', $this->id)->first();
-    //     if($appliedUser == null ) {
-    //         return false;
-    //     }
-
-    //     $getLineManagers  = DB::table('users as u')
-    //     ->leftJoin('line_managers as lm', function ($join) {
-    //         $join->on('u.id', '=', 'lm.user_id')
-    //         ->whereNULL('lm.deleted_at');
-    //     })
-    //     ->where('lm.user_id', '=', $appliedUser->user_id)
-    //     ->select('lm.line_manager_user_id')
-    //     ->get()
-    //     ->toArray();
-
-    //     $lineManagerEmail = array();
-    //     foreach ($getLineManagers as $glm) {
-    //         array_push($lineManagerEmail, DB::table('users')->where('id', '=', $glm->line_manager_user_id)->first()->email);
-    //     }
-
-    //     $hasManageLeavePermission = DB::table('permissions as p')
-    //         ->leftJoin('role_permissions as rp', 'p.id', '=', 'rp.permission_id')
-    //         ->leftJoin('basic_info as bi', 'bi.role_id', '=', 'rp.role_id')
-    //         ->where('p.slug', '=', 'notifyLeaveApply')
-    //         ->where('bi.branch_id', '=', $appliedUser->branch_id)
-    //         ->select('rp.role_id')
-    //         ->get()
-    //         ->toArray();
-    //     if($hasManageLeavePermission == null ) {
-    //         return false;
-    //     }
-
-    //     $recipientEmail = array();
-    //     foreach ($hasManageLeavePermission as $hmlp) {
-    //         array_push($recipientEmail, DB::table('basic_info')->where('role_id', '=', $hmlp->role_id)->first()->preferred_email);
-    //     }
-    //     if($recipientEmail == null ) {
-    //         return false;
-    //     }
-    //     return [$lineManagerEmail, $recipientEmail];
-    // }
 
     public function storePost()
     {
@@ -155,23 +116,4 @@ class PostRepository
         return Post::destroy($this->id);
     }
 
-    // public function getReciever($employeeId)
-    // {
-    //     $appliedUser = DB::table('users')->where('employee_id',$employeeId)->first();
-    //     $getLineManagers  = DB::table('users as u')
-    //     ->leftJoin('line_managers as lm', function ($join) {
-    //         $join->on('u.id', '=', 'lm.user_id')
-    //         ->whereNULL('lm.deleted_at');
-    //     })
-    //     ->where('lm.user_id', '=', $appliedUser->id)
-    //     ->select('lm.line_manager_user_id')
-    //     ->get()
-    //     ->toArray();
-
-    //     $lineManagerEmail = array();
-    //     foreach ($getLineManagers as $glm) {
-    //         array_push($lineManagerEmail, DB::table('users')->where('id', '=', $glm->line_manager_user_id)->first()->email);
-    //     }
-    //     return [$lineManagerEmail, $appliedUser->email];
-    // }
 }

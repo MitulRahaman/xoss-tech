@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
+use App\Notifications\NewUserNotification;
+use Illuminate\Support\Facades\Notification;
+
 class RegisteredUserController extends Controller
 {
     /**
@@ -42,10 +45,13 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
-
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        try {
+            Notification::send($user, new NewUserNotification());
+            return redirect(RouteServiceProvider::HOME)->with('success', 'User Created successfully.');
+        } catch (\Exception $e) {
+            return redirect(RouteServiceProvider::HOME)->with('success', 'User Created but unable to send email.'.$e->getMessage());
+        }
     }
 }
