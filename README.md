@@ -30,3 +30,10 @@ for Node Install
 1. Run `npm install`
 
 2. Run `npm run dev`
+
+##########
+for Admin Login
+##########
+
+Email: `admin@gmail.com`
+Password `welcome`
