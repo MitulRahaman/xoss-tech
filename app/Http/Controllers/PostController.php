@@ -30,7 +30,6 @@ class PostController extends Controller
         return $this->postService->getTableData();
     }
 
-
     public function create()
     {
         return view('post.create');
@@ -40,55 +39,55 @@ class PostController extends Controller
     {
         try {
             if ($this->postService->storePost($request)) {
-                return redirect('/dashboard')->with('success', 'Posted successfully!');
+                return redirect('/index');
             }
         } catch (\Exception $exception) {
             return redirect()->back()->with('error', $exception->getMessage());
         }
-
     }
 
-    public function edit(Request $request): View
+    public function edit($id)
     {
-        // return view('profile.edit', [
-        //     'user' => $request->user(),
-        // ]);
+        $post = $this->postService->getPost($id);
+        return view('post.edit', compact('post'));
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(PostUpdateRequest $request, $id)
     {
-        // $request->user()->fill($request->validated());
-
-        // if ($request->user()->isDirty('email')) {
-        //     $request->user()->email_verified_at = null;
-        // }
-
-        // $request->user()->save();
-
-        // return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        try {
+            if ($this->postService->updatePost($request, $id)) {
+                return redirect('/index');
+            }
+        } catch (\Exception $exception) {
+            return redirect()->back()->with('error', $exception->getMessage());
+        }
     }
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function delete($id)
     {
-        // $request->validateWithBag('userDeletion', [
-        //     'password' => ['required', 'current_password'],
-        // ]);
+        try {
+            $this->postService->delete($id);
+            return redirect()->back();
+        } catch (\Exception $exception) {
+            return redirect()->back()->with('error', $exception->getMessage());
+        }
+    }
 
-        // $user = $request->user();
+    public function show($id)
+    {
+        $showPost = $this->postService->showPost($id);
+        //dd($showPost->comments[1]->user->name);
+        return view('post.show', compact('showPost'));
+    }
 
-        // Auth::logout();
-
-        // $user->delete();
-
-        // $request->session()->invalidate();
-        // $request->session()->regenerateToken();
-
-        // return Redirect::to('/');
+    public function storeComment(Request $request)
+    {
+        try {
+            if ($this->postService->storeComment($request)) {
+                return redirect()->back();
+            }
+        } catch (\Exception $exception) {
+            return redirect()->back()->with('error', $exception->getMessage());
+        }
     }
 }

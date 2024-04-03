@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class Comment extends Model
 {
 
     /**
@@ -14,22 +14,20 @@ class Post extends Model
      */
     protected $fillable = [
         'user_id',
-        'title',
-        'content',
-        'photo',
-        'published_at',
+        'post_id',
+        'comment',
         'created_at',
         'updated_at',
     ];
 
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
     }
 
 }

@@ -6,7 +6,22 @@
     <link rel="stylesheet" href="{{ asset('backend/js/plugins/datatables/buttons-bs4/buttons.colVis.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/js/plugins/datatables/buttons-bs4/buttons.colVis2.css') }}">
 
-    <x-slot name="header">
+    <style >
+        div.dataTables_wrapper div.dataTables_length
+        {
+            margin-left: 20px;
+            float: right;
+        }
+        div.dataTables_wrapper div.dataTables_length select
+        {
+            width: 50px;;
+        }
+        .dataTables_wrapper div.dataTables_scrollBody {
+            min-height: 130px;
+        }
+    </style>
+
+    <div class="block px-8 py-3" style="">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 All Post
@@ -17,11 +32,11 @@
                 </a>
             </div>
         </div>
-    </x-slot>
+    </div>
 
     <div class="container justify-content-center pt-6">
         <div class="row">
-            <div class="col-sm-12" style="background-color: #DFD5D2">
+            <div class="col-sm-12" style="background-color: #DFD5D2; padding: 25px">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-vcenter" id="dataTable">
                     <thead>
@@ -43,7 +58,6 @@
         </div>
     </div>
 
-
     <script src="{{ asset('backend/js/oneui.core.min.js') }}"></script>
     <script src="{{ asset('backend/js/oneui.app.min.js') }}"></script>
 
@@ -54,13 +68,11 @@
     <script src="{{ asset('backend/js/plugins/datatables/buttons/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('backend/js/plugins/datatables/buttons/buttons.flash.min.js') }}"></script>
 
-
-
     <script>
         jQuery(function(){
             function createTable(){
                 $('#dataTable').DataTable( {
-                    "scrollX": true,
+
                     dom: 'Blfrtip',
                     ajax: {
                         type: 'POST',
@@ -100,5 +112,7 @@
             createTable();
         });
     </script>
+
+
 
 </x-app-layout>

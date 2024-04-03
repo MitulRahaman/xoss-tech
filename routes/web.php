@@ -31,7 +31,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/index', [PostController::class, 'index'])->name('post.index');
     Route::get('/create', [PostController::class, 'create'])->name('post.create');
     Route::post('/store', [PostController::class, 'store'])->name('post.store');
+    Route::get('/edit/{id}', [PostController::class, 'edit'])->name('post.edit');
+    Route::patch('/update/{id}', [PostController::class, 'update'])->name('post.update');
+    Route::get('/delete/{id}', [PostController::class, 'delete'])->name('post.delete');
     Route::post('getTableData', [PostController::class, 'getTableData'])->name('post.getTableData');
+    Route::get('/show/{id}', [PostController::class, 'show'])->name('post.show');
+    Route::post('/storeComment', [PostController::class, 'storeComment'])->name('post.storeComment');
 });
 
 require __DIR__.'/auth.php';

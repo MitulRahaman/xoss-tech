@@ -14,8 +14,6 @@ class PostService
         $this->fileUploadService = $fileUploadService;
     }
 
-
-
     public function storePost($request)
     {
         $fileName = null;
@@ -32,15 +30,40 @@ class PostService
             ->storePost();
     }
 
-    // public function editLeave($id)
-    // {
-    //     return $this->leaveApplyRepository->setId($id)->getLeaveInfo();
-    // }
+    public function storeComment($request)
+    {
+        return $this->postRepository->setId($request['post_id'])
+            ->setContent($request['comment'])
+            ->storeComment();
+    }
 
-    // public function updateLeave($data, $id)
-    // {
-    //     return $this->leaveApplyRepository->setId($id)->updateLeave($data);
-    // }
+    public function getPost($id)
+    {
+        return $this->postRepository->setId($id)->getPost();
+    }
+
+    public function showPost($id)
+    {
+        return $this->postRepository->setId($id)->showPost();
+    }
+
+    public function updatePost($request, $id)
+    {
+        if($request['photo']) {
+            $fileName = $this->fileUploadService->setPath($request['photo']);
+            $this->fileUploadService->setPathName('post')->uploadFile($fileName, $request['photo']);
+            return $this->postRepository->setId($id)
+            ->setTitle($request['title'])
+            ->setContent($request['content'])
+            ->setFile($fileName)
+            ->updatePost();
+        } else {
+            return $this->postRepository->setId($id)
+            ->setTitle($request['title'])
+            ->setContent($request['content'])
+            ->updatePost();
+        }
+    }
 
     // public function LeaveApplicationEmail($value)
     // {
@@ -80,49 +103,10 @@ class PostService
     //     }
     // }
 
-    // public function recommendLeave($data, $id)
-    // {
-    //     return $this->leaveApplyRepository->recommendLeave($data, $id);
-    // }
-
-    // public function approveLeave($data, $id)
-    // {
-    //     $lineManagers = $this->leaveApplyRepository->setId($data->employeeId)->getlineManagers();
-    //     if($lineManagers) {
-    //         $flag = 1;
-    //         foreach($lineManagers as $lm) {
-    //             if($lm->line_manager_user_id == auth()->user()->id) {
-    //                 $flag = 0;
-    //                 break;
-    //             }
-    //         }
-    //         if($flag) {
-    //             $isRecommended = $this->leaveApplyRepository->setId($id)->isRecommended();
-    //             if(!$isRecommended) {
-    //                 return false;
-    //             }
-    //         }
-    //         if($this->leaveApplyRepository->approveLeave($data, $id)) {
-    //             event(new LeaveApplied($data));
-    //             return true;
-    //         } else {
-    //             return false;
-    //         }
-    //     } else {
-    //         if($this->leaveApplyRepository->approveLeave($data, $id)) {
-    //             event(new LeaveApplied($data));
-    //             return true;
-    //         } else {
-    //             return false;
-    //         }
-    //     }
-    // }
-
-
-    // public function delete($id)
-    // {
-    //     return $this->leaveApplyRepository->delete($id);
-    // }
+    public function delete($id)
+    {
+        return $this->postRepository->setId($id)->delete();
+    }
 
     public function getTableData()
     {
@@ -137,15 +121,14 @@ class PostService
                 $url = asset('storage/postFiles/'. $row->photo);
                 $photo = "<img src=\"$url\" class=\"rounded\" width='50px' alt=\"user_img\">";
             } else {
-                $url = asset('images/asset.jpeg');
+                $url = asset('images/no_img.jpg');
                 $photo = "<img src=\"$url\" width='50px' class=\"rounded\" alt=\"user_img\">";
             }
             $id = $row->id;
-            $title = $row->title;
+            $title = '<a href="' . route('post.show', ['id' => $id]) . '"><strong>' . $row->title . '</strong></a>';
             $content = $row->content;
             $published_at = $row->published_at;
-
-            $delete_url = url('leaveApply/'.$id.'/delete');
+            $delete_url = route('post.delete', ['id' => $id]);
             $toggle_delete_btn = "<li><a class=\"dropdown-item\" href=\"$delete_url\">Delete</a></li>";
             $action_btn = "<div class=\"col-sm-6 col-xl-4\">
                                 <div class=\"dropdown\">
@@ -154,9 +137,19 @@ class PostService
                                     </button>
                                     <div class=\"dropdown-menu font-size-sm\" aria-labelledby=\"dropdown-default-secondary\">
                                     <ul style=\"max-height: 100px; overflow-x:hidden\">";
-            $edit_url = url('leaveApply/'.$id.'/edit');
+            $edit_url = route('post.edit', ['id' => $id]);
             $edit_btn = "<li><a class=\"dropdown-item\" href=\"$edit_url\">Edit</a></li>";
-            $action_btn .= "$edit_btn $toggle_delete_btn";
+
+            if((auth()->user()->id === 1) || ($userId == $row->user_id)) {
+                if($userId == $row->user_id){
+                    $action_btn .= "$edit_btn $toggle_delete_btn";
+                } else {
+                    $action_btn .= "$toggle_delete_btn";
+                }
+            } else {
+                $action_btn .= '<span style="margin-left: 7px;">You don\'t have permission</span>';
+            }
+
             $action_btn .= "</ul>
                             </div>
                         </div>

@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             $table->text('photo')->after('content')->nullable();
-            $table->tinyInteger('is_admin')->after('photo')->default(0);
         });
     }
 
@@ -24,7 +23,6 @@ return new class extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             $table->dropColumn('photo');
-            $table->dropColumn('is_admin');
         });
     }
 };

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Validator;
 use App\Models\Post;
+use App\Models\Comment;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -47,25 +48,20 @@ class PostRepository
         return $this;
     }
 
-    // public function getLeaveTypes($id)
-    // {
-    //     if($id == null) {
-    //         return LeaveType::where('status', Config::get('variable_constants.activation.active'))->get();
-    //     } else {
-    //         return LeaveType::where('id', '=', $id)->first()->name;
-    //     }
-
-    // }
-
     public function getTableData()
     {
-        return DB::table('posts as p')
-        ->where('p.user_id', $this->id)
-        ->select('p.*')
-        ->get();
+        return Post::all();
     }
 
+    public function getPost()
+    {
+        return Post::where('id', '=', $this->id)->first();
+    }
 
+    public function showPost()
+    {
+        return Post::with(['user', 'comments.user'])->find($this->id);
+    }
 
     // public function getLeaveAppliedEmailRecipient()
     // {
@@ -113,72 +109,52 @@ class PostRepository
 
     public function storePost()
     {
-        return DB::table('posts')->insert([
-            'user_id' => auth()->user()->id,
-            'title' => $this->title,
-            'content' => $this->content,
-            'photo' => $this->file[0],
-            'published_at' => $this->publishedAt,
-            'created_at' => $this->createdAt,
-            'updated_at' => null,
-        ]);
+        $post = new Post();
+        $post->user_id = auth()->user()->id;
+        $post->title = $this->title;
+        $post->content = $this->content;
+        $post->photo = $this->file;
+        $post->published_at = $this->publishedAt;
+        $post->created_at = $this->createdAt;
+        $post->save();
+
+        return $post;
     }
 
-    // public function getLeaveInfo()
-    // {
-    //     return LeaveApply::find($this->id);
-    // }
+    public function storeComment()
+    {
+        $comment = new Comment();
+        $comment->user_id = auth()->user()->id;
+        $comment->post_id = $this->id;
+        $comment->comment = $this->content;
+        $comment->created_at = $this->createdAt;
+        $comment->save();
 
-    // public function updateLeave($data)
-    // {
-    //     $data->startDate = date("Y-m-d", strtotime(str_replace("/","-",$data->startDate)));
-    //     $data->endDate = date("Y-m-d", strtotime(str_replace("/","-",$data->endDate)));
-    //     if($data->totalLeave == null) {
-    //         DB::table('leaves')
-    //         ->where('id', '=', $this->id)
-    //         ->update([
-    //             'leave_type_id' => $data->leaveTypeId,
-    //             'start_date' => $$data->startDatee,
-    //             'end_date' => $data->endDate,
-    //             'reason' => $data->reason,
-    //         ]);
-    //     } else {
+        return $comment;
+    }
 
-    //         DB::table('leaves')
-    //         ->where('id', '=', $this->id)
-    //         ->update([
-    //             'leave_type_id' => $data->leaveTypeId,
-    //             'start_date' => $data->startDate,
-    //             'end_date' => $data->endDate,
-    //             'total' => $data->totalLeave,
-    //             'reason' => $data->reason,
-    //         ]);
-    //     }
-    //     return true;
-    // }
-    // public function recommendLeave($data, $id)
-    // {
-    //     return DB::table('leaves')->where('id',$id)->update(['status'=> Config::get('variable_constants.leave_status.line_manager_approval'),
-    //         'remarks'=>$data['recommend-modal-remarks']]);
-    // }
-    // public function approveLeave($data, $id)
-    // {
-    //     return DB::table('leaves')->where('id',$id)->update(['status'=> Config::get('variable_constants.leave_status.approved'),
-    //         'remarks'=>$data['approve-modal-remarks']]);
-    // }
-    // public function rejectLeave($data, $id)
-    // {
-    //     return DB::table('leaves')->where('id',$id)->update(['status'=> Config::get('variable_constants.leave_status.rejected'),
-    //         'remarks'=>$data['reject-modal-remarks']]);
-    // }
-    // public function cancelLeave($id)
-    // {
-    //     return DB::table('leaves')->where('id',$id)->update(['status'=> Config::get('variable_constants.leave_status.canceled')]);
-    // }
-    // public function delete($id)
-    // {
-    //     return DB::table('leaves')->where('id', $id)->delete();
-    // }
+    public function updatePost()
+    {
+        $postToUpdate = Post::find($this->id);
+
+        if($postToUpdate) {
+            $postToUpdate->title = $this->title;
+            $postToUpdate->content = $this->content;
+            if (!is_null($this->file)) {
+                $postToUpdate->photo = $this->file;
+            }
+            $postToUpdate->save();
+            return $postToUpdate;
+        } else {
+            return response()->json(['error' => 'Post not found'], 404);
+        }
+    }
+
+    public function delete()
+    {
+        return Post::destroy($this->id);
+    }
+
     // public function getReciever($employeeId)
     // {
     //     $appliedUser = DB::table('users')->where('employee_id',$employeeId)->first();
